@@ -1,4 +1,4 @@
-# DEF CON Quals 2018: official - 194 pts - 15 solves
+# DEF CON Quals 2018: official (194 pts, 15 solves)
 
 * Server: 3aef2bbc.quals2018.oooverflow.io:31337
 * Binary: [official](official)
@@ -15,7 +15,6 @@ TL;DR: a 1 byte overflow allows you to induce a small bias in the nonce used in 
 * [solve.sage](solve.sage) - sage script to calculate private key
 * [rs_pairs.txt](rs_pairs.txt) - collected data from one run
 * [privkey](privkey) - private key file (needed if you want to run the binary yourself)
-
 * [official_msb](official_msb) - patched binary with nonce reversal code nopped out
 * [rs_pairs_msb.txt](rs_pairs_msb.txt) - collected data from the above binary
 
