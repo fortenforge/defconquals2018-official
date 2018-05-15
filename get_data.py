@@ -38,7 +38,7 @@ def collect_data(p):
     p.recvuntil('>')
     for _ in range(n):
         p.sendline('S')
-        p.send('ls' + 'A' * (256 - 2))
+        p.send('ls' + 'A' * (256 - 2)) # <-- important to use `send` instead of `sendline`
         response = p.recvuntil('>')
         print(response)
         r = int(response.split('r: ')[1].split('\n')[0])
@@ -49,6 +49,9 @@ def collect_data(p):
 if __name__ == '__main__':
     p = remote('3aef2bbc.quals2018.oooverflow.io', 31337)
     proof_of_work(p)
-    data = collect_data(p)
-    with open('rs_pairs_new.txt', 'w') as f:
-        f.write(repr(data))
+    if len(sys.argv) > 1 and sys.argv[1] == 'interact':
+        p.interactive()
+    else:
+        data = collect_data(p)
+        with open('rs_pairs_new.txt', 'w') as f:
+            f.write(repr(data))

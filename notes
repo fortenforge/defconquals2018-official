@@ -351,10 +351,10 @@ signed __int64 __fastcall verify_sign(params *curve_constant_buf, __int64 cmd, _
 ```
 
 ```
-(env) [defconquals2018-official]> python interact.py
+(env) [defconquals2018-official]> python get_data.py interact
 [+] Opening connection to 3aef2bbc.quals2018.oooverflow.io on port 31337: Done
-[*] POW Challenge: DI2s4gAN0g 22
-[*] POW Solution: 9833731
+[*] POW Challenge: 7rVwoiN0yN 22
+[*] POW Solution: 890897
 [*] Switching to interactive mode
 
 ------------------- OFFICIAL MENU -------------------
