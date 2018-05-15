@@ -1,7 +1,7 @@
-# DEF CON Quals 2018: `official` - 194 pts - 15 solves
+# DEF CON Quals 2018: official - 194 pts - 15 solves
 
-Server: 3aef2bbc.quals2018.oooverflow.io:31337
-Binary: [official](official)
+* Server: 3aef2bbc.quals2018.oooverflow.io:31337
+* Binary: [official](official)
 
 ## Writeup
 
