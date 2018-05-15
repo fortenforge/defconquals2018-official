@@ -14,6 +14,7 @@ TL;DR: a 1 byte overflow allows you to induce a small bias in the nonce used in 
 * [get_data.py](get_data.py) - pwntools script to collect data
 * [solve.sage](solve.sage) - sage script to calculate private key
 * [rs_pairs.txt](rs_pairs.txt) - collected data from one run
+* [privkey](privkey) - private key file (needed if you want to run the binary yourself)
 
 * [official_msb](official_msb) - patched binary with nonce reversal code nopped out
 * [rs_pairs_msb.txt](rs_pairs_msb.txt) - collected data from the above binary
@@ -61,8 +62,19 @@ The LLL algorithm solves the problem of *lattice reduction*. Simply put, given a
 
 
 
+### What if it was the *most* significant byte?
 
-### Flag
+The combination of the buffer overflow and the cryptographic attack makes this problem quite cute. However, I'd argue the weird call to the reversal function in order to ensure that the null byte ends up as the least significant byte of the nonce rather than the most significant byte makes the problem a little less interesting. Why would any real program do that?
+
+What would happen if that reversal function was never called? Well, instead of the least significant byte being 0, the most significant byte would be 0. This is still a bias in the nonce! Since q is less than 2^160, it might not be a bias of 8 bits, but it's quite close. For our particular q the bias ends up being ~7.75 bits, which is plenty.
+
+How would we modify our attack in this variant? Well, it's really as simple as changing all the instances of 2^l to 1, since k = b is already a small number in comparison to q.
+
+To try this out, I created a [patched copy](official_msb) of the binary with the call to the nonce reversal function nopped out. I then collected the same data from this variant binary, and modified the sage exploit code to extract the private key. To try this out yourself, simply set the `msb` flag to True in [solve.sage](solve.sage).
+
+I'm not sure why OOO included the reversal function at all. This problem was classified under "Fruits and Desserts", so it was meant to be difficult. The byte reversal was a pretty big giveaway to the intended exploit.
+
+### The Flag
 
 ```
 (env) [defconquals2018-official]> python get_data.py interact
