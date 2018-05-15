@@ -33,7 +33,7 @@ def proof_of_work(p):
     p.sendline(str(payload))
 
 def collect_data(p):
-    n = 100
+    n = 1000
     data = []
     p.recvuntil('>')
     for _ in range(n):
@@ -50,5 +50,5 @@ if __name__ == '__main__':
     p = remote('3aef2bbc.quals2018.oooverflow.io', 31337)
     proof_of_work(p)
     data = collect_data(p)
-    with open('rs_pairs.txt', 'w') as f:
+    with open('rs_pairs_new.txt', 'w') as f:
         f.write(repr(data))

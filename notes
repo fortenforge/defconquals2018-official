@@ -349,3 +349,33 @@ signed __int64 __fastcall verify_sign(params *curve_constant_buf, __int64 cmd, _
   return result;
 }
 ```
+
+```
+(env) [defconquals2018-official]> python interact.py
+[+] Opening connection to 3aef2bbc.quals2018.oooverflow.io on port 31337: Done
+[*] POW Challenge: DI2s4gAN0g 22
+[*] POW Solution: 9833731
+[*] Switching to interactive mode
+
+------------------- OFFICIAL MENU -------------------
+(S) sign
+(X) execute
+(E) exit
+> $ X
+cmd:$ cat
+r:$ 175672136897532857177216578242788547073729326124
+s:$ 301997289336897032672653458915890188389476020087
+OK
+OOO{wh0_n33d5_l34k5_wh3n_y0u_c4n_f4ul7_1nj3c7?}
+------------------- OFFICIAL MENU -------------------
+(S) sign
+(X) execute
+(E) exit
+> $ E
+Offical bye bye.
+[*] Got EOF while reading in interactive
+$
+$
+[*] Closed connection to 3aef2bbc.quals2018.oooverflow.io port 31337
+[*] Got EOF while sending in interactive
+```
