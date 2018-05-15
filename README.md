@@ -1,7 +1,7 @@
-# DEF CON Quals 2018: official - 194 pts - 15 solves
+# DEF CON Quals 2018: `official` - 194 pts - 15 solves
 
-* Server: 3aef2bbc.quals2018.oooverflow.io:31337
-* Binary: [official](official)
+Server: 3aef2bbc.quals2018.oooverflow.io:31337
+Binary: [official](official)
 
 ## Writeup
 
@@ -15,6 +15,9 @@ TL;DR: a 1 byte overflow allows you to induce a small bias in the nonce used in 
 * [solve.sage](solve.sage) - sage script to calculate private key
 * [rs_pairs.txt](rs_pairs.txt) - collected data from one run
 
+* [official_msb](official_msb) - patched binary with nonce reversal code nopped out
+* [rs_pairs_msb.txt](rs_pairs_msb.txt) - collected data from the above binary
+
 ### Reversing
 
 The binary is pretty simple; it lets you sign messages starting with `ls`, `du` or `stat` (but not `cat` or anything else) and execute signed messages starting with `ls`, `stat`, `du`, or `cat`. It uses the [GMP](https://gmplib.org/) library to handle the signing and verifying stages.
@@ -23,7 +26,7 @@ In order to generate `k`, the nonce, it reads 20 bytes from `/dev/urandom` and t
 
 It uses `fread` to read the command to sign into a buffer of size 256. It does this one byte at a time and stops reading when it encounters a newline or when it's read 256 bytes. It replaces the newline with a null terminator, but also appends a null terminator right after the last character read if it never encountered a newline.
 
-```c
+```
 __int64 __fastcall fread_stuff(__int64 a1, unsigned int a2)
 {
   signed int i; // [rsp+18h] [rbp-8h]@1
@@ -53,6 +56,10 @@ This gives us our 1 byte overflow: if we send 256 bytes, none of which contain a
 We have a DSA signing oracle which we can induce to sign messages with a biased nonce. The bias is small (only 8 bits), but it's enough to cause a full break. The attack is described pretty well in [this stackexchange answer](https://crypto.stackexchange.com/questions/44644/how-does-the-biased-k-attack-on-ecdsa-work).
 
 The attack uses the [LLL algorithm](https://en.wikipedia.org/wiki/Lenstra%E2%80%93Lenstra%E2%80%93Lov%C3%A1sz_lattice_basis_reduction_algorithm) which is quite possibly the biggest cryptographic hammer out there. It can be used to break a dizzying array of cryptographic algorithms, and it shows up in CTFs [all the time](https://ctftime.org/writeups?tags=coppersmith&hidden-tags=LLL%2Ccoppersmith) these days.
+
+The LLL algorithm solves the problem of *lattice reduction*. Simply put, given a set of linearly independent vectors m0, m1, ... mn, the LLL algorithm will try to find a different set of vectors b0, b1, ... bn that span the same space, with the goal of making the resulting vectors *short* (small in magnitude) and *orthogonal*.
+
+
 
 
 ### Flag

@@ -10,12 +10,18 @@ Rq = Integers(q)
 y = Rp(128135682856750887590860168748824430714190353609169438003724812869569788088376999153566856518649548751808974042861313871720093923966663967385639616771013994922707548355367088446112595542221209828926608117506259743026809879227606814076195362151108590706375917914576011875357384956337974597411261584032533163073)
 g = Rp(52865703933600072480340150084328845769706702669400766904467248075164948743170867377627486621900744105555465052783047541675343643777082719270261354312243195450389581166294097053506337884439282134405767273312076933070573084676163659758350542617531330447790290695414443063102502247168199735083467132847036144443)
 
+datafile = 'rs_pairs.txt'
+
+msb = False # modify exploit to work for variant problem where most sig. byte is 0
+if msb:
+  datafile = 'rs_pairs_msb.txt'
+
 rs_pairs = []
-with open('rs_pairs.txt', 'r') as f:
+with open(datafile, 'r') as f:
   for line in f:
-     r, s = line.strip().split(', ')
-     r, s = Rq(int(r)), Rq(int(s))
-     rs_pairs.append((r,s))
+    r, s = line.strip().split(', ')
+    r, s = Rq(int(r)), Rq(int(s))
+    rs_pairs.append((r,s))
 
 def get_hash(cmd):
   return int(hashlib.sha1(cmd).hexdigest(), 16)
@@ -30,10 +36,11 @@ v = Rq(pow(g, u1) * pow(y, u2))
 assert v == r
 
 # Construct lattice
-n = 70
+n = 100 # This can be as low as 66 for the original problem, or 78 for the MSB variant
 rs_pairs = rs_pairs[:n]
-l = 8
-L = pow(2, l)
+L = pow(2, 8)
+if msb:
+  L = 1
 
 T = vector([int(r  / (L * s)) for (r, s) in rs_pairs])
 U = vector([int(-h / (L * s)) for (r, s) in rs_pairs])
