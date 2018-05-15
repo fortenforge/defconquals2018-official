@@ -53,5 +53,5 @@ if __name__ == '__main__':
         p.interactive()
     else:
         data = collect_data(p)
-        with open('rs_pairs_new.txt', 'w') as f:
+        with open('rs_pairs.txt', 'w') as f:
             f.write(repr(data))

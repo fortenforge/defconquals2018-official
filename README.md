@@ -23,7 +23,7 @@ In order to generate `k`, the nonce, it reads 20 bytes from `/dev/urandom` and t
 
 It uses `fread` to read the command to sign into a buffer of size 256. It does this one byte at a time and stops reading when it encounters a newline or when it's read 256 bytes. It replaces the newline with a null terminator, but also appends a null terminator right after the last character read if it never encountered a newline.
 
-```
+```c
 __int64 __fastcall fread_stuff(__int64 a1, unsigned int a2)
 {
   signed int i; // [rsp+18h] [rbp-8h]@1

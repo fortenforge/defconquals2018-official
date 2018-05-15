@@ -66,6 +66,7 @@ for i, v in enumerate(B):
 
 # Check correctness
 assert pow(g, x) == y
+print('x: {}'.format(x))
 
 # Sign message 'cat'
 h = get_hash('cat')
