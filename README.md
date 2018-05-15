@@ -18,6 +18,16 @@ TL;DR: a 1 byte overflow allows you to induce a small bias in the nonce used in 
 * [official_msb](official_msb) - patched binary with nonce reversal code nopped out
 * [rs_pairs_msb.txt](rs_pairs_msb.txt) - collected data from the above binary
 
+### DSA
+
+This problem is about the [Digital Signature Algorithm](https://en.wikipedia.org/wiki/Digital_Signature_Algorithm) (DSA). You can read how signing and verifying work on Wikipedia.
+
+The most important thing to know about DSA is that it's security is highly dependent on the "entropy, secrecy, and uniqueness" of k, the nonce used in the signing step of the protocol. If the same k is ever used twice to sign different messages, it's a simple matter of arithmetic to derive the private key. *fail0verflow* famously exploited exactly this vulnerability to root the PlayStation 3.
+
+More recently, researchers discovered a flaw in the Android implementation of SecureRandom which resulted in colliding nonces in [Android Bitcoin wallets](https://www.theregister.co.uk/2013/08/12/android_bug_batters_bitcoin_wallets/). (Both of these attacks were actually on **EC** DSA, a variant of DSA that uses elliptic curves groups instead of multiplicative groups modulo a prime, but the vulnerability is exactly the same).
+
+It turns out that even if there's a small bias in the values you choose for your nonce, you can still recover the private key given enough signatures on known messages. This attack is much more difficult to carry out, and is the subject of this challenge.
+
 ### Reversing
 
 The binary is pretty simple; it lets you sign messages starting with `ls`, `du` or `stat` (but not `cat` or anything else) and execute signed messages starting with `ls`, `stat`, `du`, or `cat`. It uses the [GMP](https://gmplib.org/) library to handle the signing and verifying stages.
@@ -57,13 +67,13 @@ We have a DSA signing oracle which we can induce to sign messages with a biased 
 
 The attack uses the [LLL algorithm](https://en.wikipedia.org/wiki/Lenstra%E2%80%93Lenstra%E2%80%93Lov%C3%A1sz_lattice_basis_reduction_algorithm) which is quite possibly the biggest cryptographic hammer out there. It can be used to break a dizzying array of cryptographic algorithms, and it shows up in CTFs [all the time](https://ctftime.org/writeups?tags=coppersmith&hidden-tags=LLL%2Ccoppersmith) these days.
 
-The LLL algorithm solves the problem of *lattice reduction*. Simply put, given a set of linearly independent vectors m0, m1, ... mn, the LLL algorithm will try to find a different set of vectors b0, b1, ... bn that span the same space, with the goal of making the resulting vectors *short* (small in magnitude) and *orthogonal*.
+The LLL algorithm solves the problem of *lattice reduction*. Simply put, given a set of linearly independent vectors m0, m1, ... mn, the LLL algorithm will try to find a different set of vectors v0, v1, ... vn that span the same space, with the goal of making the resulting vectors *short* (small in magnitude) and *orthogonal*.
 
-
+To use LLL, we have to set up our input vectors such that an (integer) linear combination of them can result in a very short vector which will indirectly yield the private key. The key is that we can our nonce k as 256*b where b is *small*. Specifically, b is about 1/256th the size of q. With a little arithmetic we can express b as `u + x*t (mod q)` where t and u are simple functions of r, s and our message hash h.
 
 ### What if it was the *most* significant byte?
 
-The combination of the buffer overflow and the cryptographic attack makes this problem quite cute. However, I'd argue the weird call to the reversal function in order to ensure that the null byte ends up as the least significant byte of the nonce rather than the most significant byte makes the problem a little less interesting. Why would any real program do that?
+The combination of the buffer overflow and the cryptographic attack makes this challenge quite cute. However, I'd argue the weird call to the reversal function in order to ensure that the null terminator ends up as the least significant byte of the nonce rather than the most significant byte makes it a little less elegant. Why would any real program do that?
 
 What would happen if that reversal function was never called? Well, instead of the least significant byte being 0, the most significant byte would be 0. This is still a bias in the nonce! Since q is less than 2^160, it might not be a bias of 8 bits, but it's quite close. For our particular q the bias ends up being ~7.75 bits, which is plenty.
 
